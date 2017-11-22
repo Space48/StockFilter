@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+<system>
+    <tab id="space48" translate="label" sortOrder="400">
+        <label>Space48</label>
+    </tab>
+    <section id="s48_stockfilter" translate="label" type="text" sortOrder="340" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>Stock Filter</label>
+        <tab>space48</tab>
+        <resource>Space48_Stockfilter::config</resource>
+        <group id="settings" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Settings</label>
+            <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Enabled</label>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <comment>This works only if you choose to display out of stock products.</comment>
+            </field>
+            <field id="label" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Filter Label</label>
+                <depends>
+                    <field id="enabled">1</field>
+                </depends>
+            </field>
+            <field id="url_param" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>URL param name</label>
+                <depends>
+                    <field id="enabled">1</field>
+                </depends>
+            </field>
+            <field id="position" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Stock Filter Position</label>
+                <source_model>Space48\StockFilter\Model\Source\Position</source_model>
+                <depends>
+                    <field id="enabled">1</field>
+                </depends>
+            </field>
+        </group>
+    </section>
+</system>
+</config>
