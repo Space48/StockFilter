@@ -16,7 +16,7 @@ From the terminal execute the following:
 
 then
 
-`composer require "space48/stockfilter:{module-version}"`
+`composer require "space48/stockfilter"`
 
 ## How to use it
 Once installed, go to the admin area and go to `Stores -> Configuration -> Space48 -> Stock Filter` and `enable` the extension.
