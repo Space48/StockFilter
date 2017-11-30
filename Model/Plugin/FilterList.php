@@ -68,10 +68,12 @@ class FilterList
             Configuration::XML_PATH_DISPLAY_PRODUCT_STOCK_STATUS,
             ScopeInterface::SCOPE_STORE
         );
+
         $extensionEnabled = $this->_scopeConfig->isSetFlag(
             self::CONFIG_ENABLED_XML_PATH,
             ScopeInterface::SCOPE_STORE
         );
+
         return $outOfStockEnabled && $extensionEnabled;
     }
 
