@@ -63,7 +63,7 @@ class Stock extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
             return $this;
         }
         $this->_activeFilter = true;
-        $filter = (int)(bool)$filter;
+        $filter = (int)$filter;
         $collection = $this->getLayer()->getProductCollection();
         $collection->setFlag(self::IN_STOCK_COLLECTION_FLAG, true);
         $collection->getSelect()->where(

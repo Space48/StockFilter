@@ -112,7 +112,7 @@ class FilterList
             $stockFilter = $this->getStockFilter();
             switch ($position) {
                 case Position::POSITION_BOTTOM:
-                    $filters[] = $this->getStockFilter();
+                    $filters[] = $stockFilter;
                     break;
                 case Position::POSITION_TOP:
                     array_unshift($filters, $stockFilter);
@@ -122,9 +122,7 @@ class FilterList
                     $stockFilterAdded = false;
                     foreach ($filters as $key => $value) {
                         $processed[] = $value;
-                        if ($value instanceof Category
-                            || $value instanceof Category
-                        ) {
+                        if ($value instanceof Category) {
                             $processed[] = $stockFilter;
                             $stockFilterAdded = true;
                         }
