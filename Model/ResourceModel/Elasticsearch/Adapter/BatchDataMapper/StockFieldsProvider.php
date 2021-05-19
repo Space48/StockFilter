@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Space48\StockFilter\Model\ResourceModel\Elasticsearch\Adapter\BatchDataMapper;

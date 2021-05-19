@@ -29,6 +29,7 @@ class Stock extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
      * @param Layer $layer
      * @param DataBuilder $itemDataBuilder
      * @param array $data
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function __construct(
         ItemFactory $filterItemFactory,
@@ -76,8 +77,9 @@ class Stock extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
             $this->_createItem($this->getLabel($filter), $filter)
         );
 
-        if ($request->getParam($this->getUrlParamName(), null) > 0
-            && $this->isSearchEngineElasticsearch() && $this->isEnabledInStockFilterOnElasticSide()
+        if ($request->getParam($this->_requestVar, null) > 0
+            && $this->isSearchEngineElasticsearch()
+            && $this->isEnabledInStockFilterOnElasticSide()
         ) {
             $collection->addFieldToFilter(StockFieldsProvider::FIELD_NAME, 1);
         }
@@ -187,16 +189,6 @@ class Stock extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
     }
 
     /**
-     * Get url param name
-     * @return string
-     */
-    private function getUrlParamName()
-    {
-        return $this->_scopeConfig->getValue('s48_stockfilter/settings/url_param');
-    }
-
-    /**
-     * Is enabled in stock filter on Elastic side
      * @return bool
      */
     private function isEnabledInStockFilterOnElasticSide(): bool
