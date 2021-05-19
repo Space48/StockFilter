@@ -19,4 +19,6 @@ then
 `composer require "space48/stockfilter"`
 
 ## How to use it
-Once installed, go to the admin area and go to `Stores -> Configuration -> Space48 -> Stock Filter` and `enable` the extension.
+- Once installed, go to the admin area and go to `Stores -> Configuration -> Space48 -> Stock Filter` and `enable` the extension.
+- Run bin/magento indexer:reindex catalogsearch_fulltext for adding sp_stock field to ElasticSearch
+- Turn on config `Stores -> Configuration -> Space48 -> Stock Filter` -> enable_in_stock_filter_on_es_side to `YES`
