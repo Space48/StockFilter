@@ -68,10 +68,6 @@ class Stock extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
         $filter = (int)$filter;
         $collection = $this->getLayer()->getProductCollection();
         $collection->setFlag(self::IN_STOCK_COLLECTION_FLAG, true);
-        $collection->getSelect()->where(
-            'stock_status_index.stock_status = ?',
-            $filter
-        );
 
         $this->getLayer()->getState()->addFilter(
             $this->_createItem($this->getLabel($filter), $filter)
@@ -82,6 +78,11 @@ class Stock extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
             && $this->isEnabledInStockFilterOnElasticSide()
         ) {
             $collection->addFieldToFilter(StockFieldsProvider::FIELD_NAME, 1);
+        } else {
+            $collection->getSelect()->where(
+            'stock_status_index.stock_status = ?',
+                $filter
+            );
         }
 
         return $this;
