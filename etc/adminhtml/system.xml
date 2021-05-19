@@ -35,6 +35,10 @@
                     <field id="enabled">1</field>
                 </depends>
             </field>
+            <field id="enable_in_stock_filter_on_es_side" type="select" sortOrder="50" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                <label>Enable is_stock filter on ElasticSearch side</label>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            </field>
         </group>
     </section>
 </system>

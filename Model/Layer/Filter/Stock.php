@@ -10,6 +10,7 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\CatalogInventory\Model\Stock as CatalogInventoryStock;
+use Space48\StockFilter\Model\ResourceModel\Elasticsearch\Adapter\BatchDataMapper\StockFieldsProvider;
 
 class Stock extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
 {
@@ -74,6 +75,12 @@ class Stock extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
         $this->getLayer()->getState()->addFilter(
             $this->_createItem($this->getLabel($filter), $filter)
         );
+
+        if ($request->getParam($this->getUrlParamName(), null) > 0
+            && $this->isSearchEngineElasticsearch() && $this->isEnabledInStockFilterOnElasticSide()
+        ) {
+            $collection->addFieldToFilter(StockFieldsProvider::FIELD_NAME, 1);
+        }
 
         return $this;
     }
@@ -166,5 +173,34 @@ class Stock extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
             ]
         );
         return $collection->getConnection()->fetchOne($select);
+    }
+
+    /**
+     * Checks if the search engine is currently configured to use any version of Elasticsearch.
+     * @return bool
+     */
+    private function isSearchEngineElasticsearch(): bool
+    {
+        $searchEngine = $this->_scopeConfig->getValue('catalog/search/engine');
+
+        return strpos($searchEngine, 'elasticsearch') !== false;
+    }
+
+    /**
+     * Get url param name
+     * @return string
+     */
+    private function getUrlParamName()
+    {
+        return $this->_scopeConfig->getValue('s48_stockfilter/settings/url_param');
+    }
+
+    /**
+     * Is enabled in stock filter on Elastic side
+     * @return bool
+     */
+    private function isEnabledInStockFilterOnElasticSide(): bool
+    {
+        return (bool) $this->_scopeConfig->getValue('s48_stockfilter/settings/enable_in_stock_filter_on_es_side');
     }
 }
