@@ -3,6 +3,7 @@
 namespace Space48\StockFilter\Model\Layer\Filter;
 
 use Magento\Catalog\Model\Layer;
+use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
 use Magento\Catalog\Model\Layer\Filter\Item\DataBuilder;
 use Magento\Catalog\Model\Layer\Filter\ItemFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -12,7 +13,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\CatalogInventory\Model\Stock as CatalogInventoryStock;
 use Space48\StockFilter\Model\ResourceModel\Elasticsearch\Adapter\BatchDataMapper\StockFieldsProvider;
 
-class Stock extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
+class Stock extends AbstractFilter
 {
     const IN_STOCK_COLLECTION_FLAG = 's48_stock_filter_applied';
     const CONFIG_FILTER_LABEL_PATH = 's48_stockfilter/settings/label';
@@ -99,31 +100,59 @@ class Stock extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
             ScopeInterface::SCOPE_STORE
         );
     }
+
     /**
      * Get data array for building status filter items
      *
      * @return array
+     * @throws \Magento\Framework\Exception\StateException
      */
     protected function _getItemsData()
     {
         if ($this->getLayer()->getProductCollection()
             ->getFlag(
-            self::IN_STOCK_COLLECTION_FLAG
+                self::IN_STOCK_COLLECTION_FLAG
             )
         ) {
             return [];
         }
 
+        /** @var \Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection $productCollection */
+        $productCollection = $this->getLayer()->getProductCollection();
+        $optionsFacetedData = $productCollection->getFacetedData(StockFieldsProvider::FIELD_NAME);
+
         $data = [];
         foreach ($this->getStatuses() as $status) {
+            if ($this->isSearchEngineElasticsearch()) {
+                $count = $this->getOptionCount($status, $optionsFacetedData);
+            } else {
+                $count = $this->getProductsCount($status);
+            }
+
             $data[] = [
                 'label' => $this->getLabel($status),
                 'value' => $status,
-                'count' => $this->getProductsCount($status)
+                'count' => $count
             ];
         }
+
         return $data;
     }
+
+    /**
+     * Retrieve count of the options
+     *
+     * @param int|string $value
+     * @param array $optionsFacetedData
+     * @return int
+     */
+    private function getOptionCount($value, array $optionsFacetedData): int
+    {
+        return isset($optionsFacetedData[$value]['count'])
+            ? (int)$optionsFacetedData[$value]['count']
+            : 0;
+    }
+
     /**
      * get available statuses
      * @return array
@@ -159,6 +188,7 @@ class Stock extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
     /**
      * @param $value
      * @return string
+     * @deprected This method shows incorrect count, left for compatibility with fulltextsearch mysql engine.
      */
     public function getProductsCount($value)
     {
