@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0]
+
+### Fixed
+
+- Incorrect count of In Stock products in layered navigation
+
 ## [1.0.4]
 
 ### Fixed

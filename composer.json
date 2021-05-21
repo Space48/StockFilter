@@ -1,6 +1,6 @@
 {
     "name": "space48/stockfilter",
-    "description": "N/A",
+    "description": "Add in stock filter to layered navigation",
     "require": {
         "php": ">=7.0.0",
         "magento/framework": ">=100.1.0"
