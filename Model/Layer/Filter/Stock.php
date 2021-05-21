@@ -123,10 +123,16 @@ class Stock extends AbstractFilter
 
         $data = [];
         foreach ($this->getStatuses() as $status) {
+            if ($this->isSearchEngineElasticsearch()) {
+                $count = $this->getOptionCount($status, $optionsFacetedData);
+            } else {
+                $count = $this->getProductsCount($status);
+            }
+
             $data[] = [
                 'label' => $this->getLabel($status),
                 'value' => $status,
-                'count' => $this->getOptionCount($status, $optionsFacetedData)
+                'count' => $count
             ];
         }
 
@@ -140,7 +146,7 @@ class Stock extends AbstractFilter
      * @param array $optionsFacetedData
      * @return int
      */
-    private function getOptionCount($value, $optionsFacetedData)
+    private function getOptionCount($value, array $optionsFacetedData): int
     {
         return isset($optionsFacetedData[$value]['count'])
             ? (int)$optionsFacetedData[$value]['count']
@@ -177,6 +183,29 @@ class Stock extends AbstractFilter
             return $labels[$value];
         }
         return '';
+    }
+
+    /**
+     * @param $value
+     * @return string
+     * @deprected This method shows incorrect count, left for compatibility with fulltextsearch mysql engine.
+     */
+    public function getProductsCount($value)
+    {
+        $collection = $this->getLayer()->getProductCollection();
+        $select = clone $collection->getSelect();
+        // reset columns, order and limitation conditions
+        $select->reset(\Zend_Db_Select::COLUMNS);
+        $select->reset(\Zend_Db_Select::ORDER);
+        $select->reset(\Zend_Db_Select::LIMIT_COUNT);
+        $select->reset(\Zend_Db_Select::LIMIT_OFFSET);
+        $select->where('stock_status_index.stock_status = ?', $value);
+        $select->columns(
+            [
+                'count' => new \Zend_Db_Expr("COUNT(e.entity_id)")
+            ]
+        );
+        return $collection->getConnection()->fetchOne($select);
     }
 
     /**
